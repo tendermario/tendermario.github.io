@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Freelancer - Start Bootstrap Theme</title>
+    <title>Paulo Brito - Developer</title>
 
     <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -62,6 +62,10 @@
                     <li class="page-scroll">
                         <a href="#about">About</a>
                     </li>
+                    <li class="page-scroll">
+                        <a href="#resume">Resume</a>
+                    </li>
+
 
                 </ul>
             </div>
@@ -124,24 +128,24 @@
                 </div>
 
                 <div class="col-sm-4 portfolio-item lightbox-bomTur">
-                    <a href="img/portfolio/big/bomTur3.png">
+                    <a href="img/portfolio/big/bomTur5.png">
                         <img src="img/portfolio/bomTur.png" alt="" class="img-responsive" />
                     </a>
 
                     <a href="img/portfolio/big/bomTur1.png"></a>
                     <a href="img/portfolio/big/bomTur2.png"></a>
+                    <a href="img/portfolio/big/bomTur3.png"></a>
                     <a href="img/portfolio/big/bomTur4.png"></a>
-                    <a href="img/portfolio/big/bomTur5.png"></a>
                 </div>
 
 
                 <div class="col-sm-4 portfolio-item lightbox-hidroFiltros">
-                    <a href="img/portfolio/big/Hidrofiltros3.png">
+                    <a href="img/portfolio/big/Hidrofiltros1.png">
                         <img src="img/portfolio/hidroFiltros.png" alt="" class="img-responsive" />
                     </a>
                     <a href="img/portfolio/big/Hidrofiltros2.png"></a>
                     <a href="img/portfolio/big/Hidrofiltros3.png"></a>
-                    <a href="img/portfolio/big/Hidrofiltros1.png"></a>
+                    <a href="img/portfolio/big/Hidrofiltros4.png"></a>
                 </div>
 
 
@@ -167,12 +171,34 @@
             </div>
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-2">
-                    <p>A junior developer with a computer science degree looking to expand into a full stack developer role. Enjoys keep up to date with new technologies. </p>
+                    <p>
+                        A junior developer passionate for new technologies and coding, always looking for the latest trends on frameworks, tools.  With a Computer Engineering Degree is attending to a intensive coding bootcamp in order to go further on web development.
+                    </p>
+
                 </div>
                 <div class="col-lg-4">
-                    <p>What drives me to be a better programmer is to find solutions to solve customer’s needs in order to make their business more profitable.</p>
+                    <p>
+                        Looking forward to help people solving challenges with software. Find solutions to solve customer's needs and at same time making their business more profitable drives me to be a better programmer every day.
+                    </p>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume -->
+    <section id="resume">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Resume</h2>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <iframe src="https://drive.google.com/file/d/0B8uglvstRD0ER2pWSGhXYllGN2c/preview" width="100%" height="1000"></iframe>
+                </div>
             </div>
         </div>
     </section>
@@ -191,13 +217,11 @@
                         <h3>Around the Web</h3>
                         <ul class="list-inline">
                             <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-facebook"></i></a>
+                                <a href="https://github.com/paulocamboim" class="btn-social btn-outline" target="_blank"><i class="fa fa-fw fa-github"></i></a>
                             </li>
+
                             <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-google-plus"></i></a>
-                            </li>
-                            <li>
-                                <a href="https://www.linkedin.com/in/paulocamboim" class="btn-social btn-outline"><i class="fa fa-fw fa-linkedin"></i></a>
+                                <a href="https://www.linkedin.com/in/paulocamboim" class="btn-social btn-outline" target="_blank"><i class="fa fa-fw fa-linkedin"></i></a>
                             </li>
 
                         </ul>
@@ -216,6 +240,8 @@
             </div>
         </div>
     </footer>
+
+
 
     <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
     <div class="scroll-top page-scroll visible-xs visible-sm">
@@ -256,7 +282,18 @@
         var $lightbox6 = $('.lightbox-studioImagi a').simpleLightbox( { captionSelector: 'self'});
     });
 
-    $(".lightbox-clinicaDoExercicio").find("a").attr("title", "Company focused on senior and elderly fitness with a physician monitoring patient’s health. <br>LAMP Stack. Linux, Apache, MySQL, PHP, JavaScript, jQuery")
+
+    $(".lightbox-clinicaDoExercicio").find("a").attr("title", "Technologies used: Linux, Apache, MySQL, PHP (LAMP Stack), JavaScript, jQuery");
+    $(".lightbox-camboimPetrucci").find("a").attr("title", "Technologies used: PHP, HTML5, CSS, LESS, jQuery, WordPress");
+    $(".lightbox-bomTur").find("a").attr("title", "PHP, Laravel, Angular 1.5, MySQL, SVN");
+    $(".lightbox-hidroFiltros").find("a").attr("title", "PHP, MySQL, JavaScript, jQuery, Boostrap");
+
+    $(".lightbox-trilhaCapital").find("a").attr("title", "Technologies used: MySQL, PHP, JavaScript, jQuery");
+    $(".lightbox-studioImagi").find("a").attr("title", "Technologies used: HTML5, WordPress");
+
+
+
+
     </script>
 
 </body>
