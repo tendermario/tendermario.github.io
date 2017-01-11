@@ -99,6 +99,28 @@
       </div>
       <div class="row">
         <div class="col-lg-12 text-center">
+          <h3>Heavy Visualizer</h3>
+          <p></p>
+        </div>
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6 portfolio-item lightbox-heavyvis">
+          <a href="img/portfolio/heavyvisualizer-day2.png">
+            <img src="img/portfolio/heavyvisualizer-day15-short.gif" alt="" class="img-responsive" id="short" />
+          </a>
+          <a href="img/portfolio/heavyvisualizer-day7.png"></a>
+          <a href="img/portfolio/heavyvisualizer-day8.png"></a>
+          <a href="img/portfolio/heavyvisualizer-day11.png"></a>
+          <a href="img/portfolio/heavyvisualizer-day15-short.gif"></a>
+        </div>
+        <div class="col-lg-12 text-center">
+          <p>Check it out, it's live!</p>
+          <a href="http://heavyvisualizer.com/">http://heavyvisualizer.com</a><br>
+          <a id="heavyvis-swap">Click here to display a longer gif (76MB)</a>
+          </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-lg-12 text-center">
           <h3>Ordr</h3>
         </div>
         <div class="col-sm-3"></div>
@@ -106,20 +128,6 @@
           <a href="img/portfolio/ordr1.png">
             <img src="img/portfolio/ordr1.png" alt="" class="img-responsive"/>
           </a>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <h3>Heavy Visualizer</h3>
-          <a href="http://heavyvisualizer.com/">http://heavyvisualizer.com</a>
-          <p></p>
-        </div>
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6 portfolio-item lightbox-heavyvis">
-          <a href="img/portfolio/heavyvisualizer2.png">
-            <img src="img/portfolio/heavyvisualizer2.png" alt="" class="img-responsive" />
-          </a>
-          <a href="img/portfolio/heavyvisualizer1.png"></a>
         </div>
       </div>
     </div>
@@ -138,7 +146,7 @@
         <div class="col-lg-4 col-lg-offset-2">
           <p>
             I am a junior developer seeking an awesome company to bring
-            my skills on board. I'm also Looking to expand into a
+            my skills on board. I'm also looking to expand into a
             full stack developer role. I'm passionate about pure
             mathematics, and enjoy being on the bleeding edge of
             technology and innovation, with previous experience in
@@ -253,6 +261,14 @@
 
   $(".lightbox-ordr").find("a").attr("title", "Technologies used: JavaScript, Express, EJS, Node.js, Postgres database hosted on Heroku, incorporated Twilio API");
   $(".lightbox-heavyvis").find("a").attr("title", "Technologies used: JavaScript, Three.js, Express, EJS, Node.js");
+
+  $('#heavyvis-swap').on("click", function() {
+    var src = $('#short').attr("src").replace("-short.gif", ".gif");
+    $('#short').attr("src", src);
+    $('#short').hide();
+    $('#short').fadeIn();
+    $(this).slideUp(500);
+  })
   </script>
 </body>
 </html>
