@@ -1,0 +1,32 @@
+/* Main Styles */
+
+*, *::before, *::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+}
+
+#doomsdayClock {
+    font-variant: small-caps;
+    font-weight: 900;
+    font-size: 4em;
+    margin: auto;
+    margin-top: 1.5em;
+    max-width: 80%;
+    text-align: center;
+}
+
+.clockPart {
+    margin-bottom: 1rem;
+}
+
+.footer {
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+}
