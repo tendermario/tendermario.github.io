@@ -1,0 +1,24 @@
+<script src="sound.js"></script>
+
+<button id='1' onclick="playSound()">Press me</button>
+
+This is a test that will make a sound every 5 min, 20 seconds.
+
+
+<script>
+var minutes = 0
+var seconds = 20
+
+var timeInSeconds = minutes * 60 + seconds
+var audio = new Audio('./audio/smb_1-up.wav')
+
+var ticker = 0
+
+var playSound = function() {
+	console.log(ticker++)
+	setInterval(function () {
+		playSound()
+	}, timeInSeconds * 1000)
+	audio.play()
+}
+</script>
