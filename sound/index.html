@@ -2,23 +2,41 @@
 
 <button id='1' onclick="playSound()">Press me</button>
 
-This is a test that will make a sound every 5 min, 20 seconds.
+<p>This is a test that will make a sound every 5 min, 20 seconds.</p>
 
+<p>Remaining: <span id='remaining'>5 minutes 20 seconds</span></p>
 
 <script>
-var minutes = 0
+var minutes = 5
 var seconds = 20
 
 var timeInSeconds = minutes * 60 + seconds
+var timeMs = timeInSeconds * 1000
 var audio = new Audio('./audio/smb_1-up.wav')
 
-var ticker = 0
+var nextInterval = new Date().getTime() + timeMs
 
 var playSound = function() {
-	console.log(ticker++)
+	
+	// Countdown-er
 	setInterval(function () {
-		playSound()
-	}, timeInSeconds * 1000)
+		var now = new Date().getTime()
+		var remaining = nextInterval - now
+		
+		var minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+		var seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+		document.getElementById('remaining').textContent = minutes + " minutes " + seconds + " seconds"
+		//document.getElementById('remaining').textContent = remaining
+	}, 1000)
+
+	// Play sound!
+	setInterval(function () {
+		nextInterval = new Date().getTime() + timeMs
+		audio.play()
+	}, timeMs)
+
+	// Also play sound on first click
+	nextInterval = new Date().getTime() + timeMs
 	audio.play()
 }
 </script>
