@@ -10,7 +10,7 @@
 <div id="main">
   <button id='1' onclick="playSound()">Press me</button>
 
-  <p>This is a test that will make a sound every 5 min, 20 seconds.</p>
+  <p>This will make a sound every 5 min, 20 seconds.</p>
   <p>Remaining:</p>
   <span id='remaining'>5 minutes 20 seconds</span>
 </div>
@@ -27,30 +27,33 @@ var seconds = 20
 
 var timeInSeconds = minutes * 60 + seconds
 var timeMs = timeInSeconds * 1000
-var audio = new Audio('./audio/smb_1-up.wav')
 var audio1 = new Audio('./audio/smw2_coin.wav')
 var audio2 = new Audio('./audio/smb_1-up.wav')
 var audio3 = new Audio('./audio/smw2_pause.wav')
 
+var currentAudio = audio3
+
 function useAudio1() {
-  audio = audio1
-  console.log('audio', audio)
+  currentAudio = audio1
 }
 
 function useAudio2() {
-  audio = audio2
-  console.log('audio', audio)
+  currentAudio = audio2
 }
 
 function useAudio3() {
-  audio = audio3
-  console.log('audio', audio)
+  currentAudio = audio3
 }
 
 var nextInterval = new Date().getTime() + timeMs
 
+var countdownTimer;
+
 var playSound = function() {
-	
+	if (countdownTimer) {
+		clearInterval(countdownTimer)
+	}
+
 	// Countdown-er
 	setInterval(function () {
 		var now = new Date().getTime()
@@ -60,16 +63,16 @@ var playSound = function() {
 		var seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 		document.getElementById('remaining').textContent = minutes + " minutes " + seconds + " seconds"
 		//document.getElementById('remaining').textContent = remaining
-	}, 1000)
+	}, 200)
 
 	// Play sound!
-	setInterval(function () {
+	countdownTimer = setInterval(function () {
 		nextInterval = new Date().getTime() + timeMs
-		audio.play()
+		currentAudio.play()
 	}, timeMs)
 
 	// Also play sound on first click
 	nextInterval = new Date().getTime() + timeMs
-	audio.play()
+	currentAudio.play()
 }
 </script>
