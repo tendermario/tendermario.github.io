@@ -1,0 +1,78 @@
+<style>
+.main {
+    display: flex;
+    width: 200px;
+    align-items: center;
+    flex-direction: column;
+}
+</style>
+
+<div id="main">
+  <button id='1' onclick="playSound()">Press me</button>
+
+  <p>This will make a sound every 5 min, 20 seconds.</p>
+  <p>Remaining:</p>
+  <span id='remaining'>5 minutes 20 seconds</span>
+</div>
+<br/>
+<br/>
+<p>Change the sound:</p>
+<button id='coin' onclick="useAudio1()">Coin</button>
+<button id='1up' onclick="useAudio2()">1up</button>
+<button id='pause' onclick="useAudio3()">Pause</button>
+
+<script>
+var minutes = 5
+var seconds = 20
+
+var timeInSeconds = minutes * 60 + seconds
+var timeMs = timeInSeconds * 1000
+var audio1 = new Audio('./audio/smw2_coin.wav')
+var audio2 = new Audio('./audio/smb_1-up.wav')
+var audio3 = new Audio('./audio/smw2_pause.wav')
+
+var currentAudio = audio3
+
+function useAudio1() {
+  currentAudio = audio1
+}
+
+function useAudio2() {
+  currentAudio = audio2
+}
+
+function useAudio3() {
+  currentAudio = audio3
+}
+
+var nextInterval = new Date().getTime() + timeMs
+
+var countdownTimer;
+
+var playSound = function() {
+	if (countdownTimer) {
+		clearInterval(countdownTimer)
+	}
+
+	// Countdown-er
+	setInterval(function () {
+		var now = new Date().getTime()
+		var remaining = nextInterval - now
+		
+		var minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+		var seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+		document.getElementById('remaining').textContent = minutes + " minutes " + seconds + " seconds"
+		//document.getElementById('remaining').textContent = remaining
+	}, 200)
+
+	// Play sound!
+	countdownTimer = setInterval(function () {
+		nextInterval = new Date().getTime() + timeMs
+		currentAudio.play()
+	}, timeMs)
+
+	// Also play sound on first click
+	nextInterval = new Date().getTime() + timeMs
+	currentAudio.play()
+}
+</script>
