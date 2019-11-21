@@ -1,7 +1,7 @@
 
 'use strict';
 
-const DOOMSDAY = new Date(Date.UTC(2018, 5, 9));
+const DOOMSDAY = new Date(Date.UTC(2019, 12, 25));
 
 document.addEventListener('DOMContentLoaded', () => {
   let clock = document.getElementById('doomsdayClock');
