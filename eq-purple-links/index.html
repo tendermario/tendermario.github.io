@@ -4,18 +4,132 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EverQuest Purple Links Creator</title>
-  <script src="index.js"></script>
 </head>
 <body>
   <div>
-    <input id="delimiter"> | </input>
-    <textarea id="input-list"></textarea>
+    <label for="input-list">Input list:</label>
+    <textarea id="input-list" name="input-list"></textarea>
+    <label for="output-list">Output list:</label>
     <textarea id="output-list"></textarea>
-    <input id="starting value">/auc WTS </input>
+    <label for="prefix">Prefix:</label>
+    <input id="prefix" type="text" value="/auc WTS "></input>
+    <label for="delimiter">Delimiter:</label>
+    <input id="delimiter" type="text" value=" | "></input>
+    <label for="buttonNumberStart">Button number start (Starts on page 2, button 1-12):</label>
+    <input id="buttonNumberStart" type="text" value="5"></input>
   </div>
   <div>
-    <div class="ignores"></div>
-    <div class="prices"></div>
+    <div>
+      Ignores:
+      <ul id="ignores">
+      </ul>
+    </div>
+    <div id="prices" class="prices"></div>
   </div>
+  <script src="jquery-3.7.1.min.js"></script>
+  <script>
+    var delimiter = document.getElementById('delimiter');
+    var inputList = document.getElementById('input-list');
+    var outputList = document.getElementById('output-list');
+    var prefix = document.getElementById('prefix');
+    var buttonNumberStart = document.getElementById('buttonNumberStart');
+    var ignores = $('#ignores');
+    var prices = $('#prices');
+
+
+    // Goals:
+    // 1. For a given input list, create an output list - x
+    // 2. For an output list, modify it to have only the name and ID - x
+    // 3. For a name and ID, add purple link, ID hex and padding - x
+    // 4. For each purple link, add prefix and delimiter up to 255 characters separation - x
+    // 5. For each purple link list, add button prefix - x
+    // 6. Add a list of prices
+    // 7. Save data to local storage to remember previous price values
+
+    function unique(a) {
+        var seen = {};
+        return a.filter(function(item) {
+            return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+        });
+    }
+
+    function getNameAndHex(input) {
+      // Remove garbage lines: header, empty slots, empty lines
+      var inventory = input.split("\n").filter(value => !value.startsWith("Location	") && !value.includes("\tEmpty") && value.trim() !== "");
+      
+      // Remove unnecessary values, keeping just Name and ID
+      inventory = inventory.map(row => {
+        columns = row.split('\t');
+        return [columns[1], columns[2]];
+      })
+
+      // Remove custom values I don't want included:
+      ignoreList = ["Backpack", "Medicine Bag", "Elemental Grimoire", "Split Paw Hide Mask", "Golden Fire Wedding Ring", "Large Raw-hide Boots", "Banded Bracer", "Burynai Hide Shoulder Pads", "Banded Cloak", "Tizmak Sleeves", "Kobold Bone Gauntlets", "Shiny Brass Shield", "Ring of the Stonechanters", "Black Steel Wrap"];
+      inventory = inventory.filter(value => !ignoreList.includes(value[0]));
+
+      // Dedupe
+      return unique(inventory);
+    }
+    
+    function addToIgnoresAndPrices(input) {
+      // Add to both ignores and prices lists
+      ignores.empty();
+      input.forEach(value => {
+        ignores.append($(`<li><input type="checkbox" id="${value[0]}" name="${value[0]}" value="${value[0]}">
+  <label for="${value[0]}">${value[0]}</label></li>`));
+      })
+
+    }
+
+    const updateList = () => {
+      var input = getNameAndHex(inputList.value);
+      addToIgnoresAndPrices(input);
+      
+      // Add special characters around it
+      links = input.map(values => {
+        var name = values[0];
+        var hex = Number(values[1]).toString(16).padStart(4, 0);
+        return "00" + hex + "000000000000000000000000000000000000000" + name + "";
+        // E.g.: 002fe3000000000000000000000000000000000000000 Leatherfoot Raider Skullcap
+      });
+
+      // Add a static 3 items to each line
+      var finalLines = []
+      for (var i = 0; i < links.length; i+=3) {
+        finalLines.push(prefix.value + links[0 + i] + delimiter.value + links[1 + i] + delimiter.value + links[2 + i]);
+      }
+
+      // Failure path:
+      finalLines.forEach(value => {
+        if (value.length > 255) {
+          console.warn("Warning: length of the following line is above 255 chars (" + value.length + "):")
+          console.warn(value)
+        }
+      })
+
+      // Add button lines
+      // Page2Button10Line5=
+      var line = 1;
+      var buttonNumber = buttonNumberStart.value;
+      finalLines = finalLines.map(value => {
+        if (value.length > 255) {
+          console.warn("Warning: length of the following line is above 255 chars (" + value.length + "):")
+          console.warn(value)
+        }
+        if (line == 6) {
+          line = 1;
+          buttonNumber++;
+        }
+        return `Page2Button${buttonNumber}Line${line++}=${value}`
+      })
+
+      // Separate with newlines
+      outputList.value = finalLines.join("\n");
+    }
+
+    inputList.addEventListener('keyup', updateList);
+    prefix.addEventListener('keyup', updateList);
+    delimiter.addEventListener('keyup', updateList);
+  </script>
 </body>
 </html>
