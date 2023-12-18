@@ -57,7 +57,7 @@
         });
     }
 
-    function getNameAndHex(input) {
+    function getNamesAndIds(input) {
       // Remove garbage lines: header, empty slots, empty lines
       var inventory = input.split("\n").filter(value => !value.startsWith("Location	") && !value.includes("\tEmpty") && value.trim() !== "");
       
@@ -71,6 +71,7 @@
       ignoreList = ["Backpack", "Medicine Bag", "Elemental Grimoire", "Split Paw Hide Mask", "Golden Fire Wedding Ring", "Large Raw-hide Boots", "Banded Bracer", "Burynai Hide Shoulder Pads", "Banded Cloak", "Tizmak Sleeves", "Kobold Bone Gauntlets",
       "Shiny Brass Shield", "Ring of the Stonechanters", "Black Steel Wrap", "High Quality Bear Skin"];
       inventory = inventory.filter(value => !ignoreList.includes(value[0]));
+      // inventory = inventory.filter(value => !localStorage.getItem("ignoreList").includes(value[1]));
 
       // Dedupe
       return unique(inventory);
@@ -79,25 +80,35 @@
     function updateIgnoresAndPricesLists(input) {
       // Add to both ignores and prices lists
       ignores.empty();
-      input.forEach(value => {
-        const [name, id] = value;
-        const radio = $(`<input type="checkbox" id="${name}">`)
+      input.forEach(nameAndId => {
+        const [name, id] = nameAndId;
+        const isChecked = localStorage.getItem("ignoreList")?.includes(id) ? "checked" : "";
+        const ignoreCheckbox = $(`<input type="checkbox" id="${name}" ${isChecked} ">`)
         const label = $(`<label for="${name}">${name}</label>`)
         const price = $(`<input id="price-${id}" value="${localStorage.getItem(id) || ""}"></input>`)
         const item = $(`<li></li>`);
-        item.append(radio, label, price);
+        item.append(ignoreCheckbox, label, price);
         ignores.append(item);
-        //radio.addEventListener('input', updateList);
         price.on('input', event => localStorage.setItem(id, event.target.value));
+        ignoreCheckbox.on('click', event => {
+          let ignoreList = JSON.parse(localStorage.getItem("ignoreList")) || [];
+          console.log(ignoreList);
+          if (ignoreList.includes(id)) {
+            ignoreList = ignoreList.filter(i => i != id);
+          } else {
+            ignoreList.push(id);
+          }
+          localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
+        });
       });
     }
 
     const updateList = () => {
-      var input = getNameAndHex(inputList.value);
-      updateIgnoresAndPricesLists(input);
+      var namesAndIdsList = getNamesAndIds(inputList.value);
+      updateIgnoresAndPricesLists(namesAndIdsList);
       
-      // Add special characters around it
-      links = input.map(values => {
+      // Add special characters around it and turn id into a hex
+      links = namesAndIdsList.map(values => {
         var name = values[0];
         var hex = Number(values[1]).toString(16).padStart(4, 0);
         return "00" + hex + "000000000000000000000000000000000000000" + name + "";
