@@ -12,19 +12,19 @@
     <label for="output-list">Output list:</label>
     <textarea id="output-list"></textarea>
     <label for="prefix">Prefix:</label>
-    <input id="prefix" type="text" value="/auc WTS "></input>
+    <input id="prefix" value="/auc WTS "></input>
     <label for="delimiter">Delimiter:</label>
-    <input id="delimiter" type="text" value=" | "></input>
+    <input id="delimiter" value=" | "></input>
     <label for="buttonNumberStart">Button number start (Starts on page 2, button 1-12):</label>
-    <input id="buttonNumberStart" type="text" value="5"></input>
+    <input id="buttonNumberStart" value="5"></input>
   </div>
   <div>
     <div>
-      Ignores:
+      Ignores:        Prices:
       <ul id="ignores">
       </ul>
     </div>
-    <div id="prices" class="prices"></div>
+    <div id="prices"></div>
   </div>
   <script src="jquery-3.7.1.min.js"></script>
   <script>
@@ -43,8 +43,12 @@
     // 3. For a name and ID, add purple link, ID hex and padding - x
     // 4. For each purple link, add prefix and delimiter up to 255 characters separation - x
     // 5. For each purple link list, add button prefix - x
-    // 6. Add a list of prices
-    // 7. Save data to local storage to remember previous price values
+    // 6. Add a list of prices per items - in progress
+    // 7. Make sure each line is under 255 characters
+    // 8. Add a list of ignored items
+    // 9. Save data to local storage to remember previous price values
+    // 10. Fix bug: undefined items in list
+    // 11. Sort items (by name, or price)
 
     function unique(a) {
         var seen = {};
@@ -64,33 +68,40 @@
       })
 
       // Remove custom values I don't want included:
-      ignoreList = ["Backpack", "Medicine Bag", "Elemental Grimoire", "Split Paw Hide Mask", "Golden Fire Wedding Ring", "Large Raw-hide Boots", "Banded Bracer", "Burynai Hide Shoulder Pads", "Banded Cloak", "Tizmak Sleeves", "Kobold Bone Gauntlets", "Shiny Brass Shield", "Ring of the Stonechanters", "Black Steel Wrap"];
+      ignoreList = ["Backpack", "Medicine Bag", "Elemental Grimoire", "Split Paw Hide Mask", "Golden Fire Wedding Ring", "Large Raw-hide Boots", "Banded Bracer", "Burynai Hide Shoulder Pads", "Banded Cloak", "Tizmak Sleeves", "Kobold Bone Gauntlets",
+      "Shiny Brass Shield", "Ring of the Stonechanters", "Black Steel Wrap", "High Quality Bear Skin"];
       inventory = inventory.filter(value => !ignoreList.includes(value[0]));
 
       // Dedupe
       return unique(inventory);
     }
     
-    function addToIgnoresAndPrices(input) {
+    function updateIgnoresAndPricesLists(input) {
       // Add to both ignores and prices lists
       ignores.empty();
       input.forEach(value => {
-        ignores.append($(`<li><input type="checkbox" id="${value[0]}" name="${value[0]}" value="${value[0]}">
-  <label for="${value[0]}">${value[0]}</label></li>`));
-      })
-
+        const [name, id] = value;
+        const radio = $(`<input type="checkbox" id="${name}">`)
+        const label = $(`<label for="${name}">${name}</label>`)
+        const price = $(`<input id="price-${id}" value="${localStorage.getItem(id) || ""}"></input>`)
+        const item = $(`<li></li>`);
+        item.append(radio, label, price);
+        ignores.append(item);
+        //radio.addEventListener('input', updateList);
+        price.on('input', event => localStorage.setItem(id, event.target.value));
+      });
     }
 
     const updateList = () => {
       var input = getNameAndHex(inputList.value);
-      addToIgnoresAndPrices(input);
+      updateIgnoresAndPricesLists(input);
       
       // Add special characters around it
       links = input.map(values => {
         var name = values[0];
         var hex = Number(values[1]).toString(16).padStart(4, 0);
         return "00" + hex + "000000000000000000000000000000000000000" + name + "";
-        // E.g.: 002fe3000000000000000000000000000000000000000 Leatherfoot Raider Skullcap
+        // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
       });
 
       // Add a static 3 items to each line
@@ -127,9 +138,9 @@
       outputList.value = finalLines.join("\n");
     }
 
-    inputList.addEventListener('keyup', updateList);
-    prefix.addEventListener('keyup', updateList);
-    delimiter.addEventListener('keyup', updateList);
+    inputList.addEventListener('input', updateList);
+    prefix.addEventListener('input', updateList);
+    delimiter.addEventListener('input', updateList);
   </script>
 </body>
 </html>
