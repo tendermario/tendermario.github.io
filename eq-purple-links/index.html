@@ -73,10 +73,12 @@
         const item = $(`<li></li>`);
         item.append(ignoreCheckbox, label, price);
         ignores.append(item);
+        
         price.on('input', event => {
           localStorage.setItem(id, event.target.value)
-          updateList()
         });
+        price.on('blur', updateList)
+
         ignoreCheckbox.on('click', event => {
           let ignoreList = JSON.parse(localStorage.getItem("ignoreList")) || [];
           if (ignoreList.includes(id)) {
