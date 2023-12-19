@@ -43,45 +43,28 @@
     // 3. For a name and ID, add purple link, ID hex and padding - x
     // 4. For each purple link, add prefix and delimiter up to 255 characters separation - x
     // 5. For each purple link list, add button prefix - x
+    // 7. Make sure each line is under 255 characters - x
+    // 8. Add a list of ignored items - x
+    // 9. Save data to local storage to remember previous price values - x
+    // 10. Fix bug: undefined items in list - x
     // 6. Add a list of prices per items - in progress
-    // 7. Make sure each line is under 255 characters
-    // 8. Add a list of ignored items
-    // 9. Save data to local storage to remember previous price values
-    // 10. Fix bug: undefined items in list
     // 11. Sort items (by name, or price)
 
     function unique(a) {
         var seen = {};
         return a.filter(function(item) {
-            return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+          if (!seen[item.id]) {
+            seen[item.id] = true
+            return true
+          }
+          return false
         });
     }
-
-    function getNamesAndIds(input) {
-      // Remove garbage lines: header, empty slots, empty lines
-      var inventory = input.split("\n").filter(value => !value.includes("Location	") && !value.includes("\tEmpty") && value.trim() !== "");
-      
-      // Remove unnecessary values, keeping just Name and ID
-      inventory = inventory.map(row => {
-        columns = row.split('\t');
-        return [columns[1], columns[2]];
-      })
-
-      // Remove custom values I don't want included:
-      ignoreList = ["Backpack", "Medicine Bag", "Elemental Grimoire", "Split Paw Hide Mask", "Golden Fire Wedding Ring", "Large Raw-hide Boots", "Banded Bracer", "Burynai Hide Shoulder Pads", "Banded Cloak", "Tizmak Sleeves", "Kobold Bone Gauntlets",
-      "Shiny Brass Shield", "Ring of the Stonechanters", "Black Steel Wrap", "High Quality Bear Skin"];
-      inventory = inventory.filter(value => !ignoreList.includes(value[0]));
-      // inventory = inventory.filter(value => !localStorage.getItem("ignoreList").includes(value[1]));
-
-      // Dedupe
-      return unique(inventory);
-    }
     
-    function updateIgnoresAndPricesLists(input) {
+    function createIgnoresAndPricesLists(items) {
       // Add to both ignores and prices lists
       ignores.empty();
-      input.forEach(nameAndId => {
-        const [name, id] = nameAndId;
+      items.forEach(({name, id}) => {
         const isChecked = localStorage.getItem("ignoreList")?.includes(id) ? "checked" : "";
         const ignoreCheckbox = $(`<input type="checkbox" id="${name}" ${isChecked} ">`)
         const label = $(`<label for="${name}">${name}</label>`)
@@ -124,20 +107,49 @@
       return finalLines;
     }
 
-    const updateList = () => {
-      const namesAndIdsList = getNamesAndIds(inputList.value);
-      updateIgnoresAndPricesLists(namesAndIdsList);
-      
-      // Add special characters around it and turn id into a hex
-      links = namesAndIdsList.map(values => {
-        const name = values[0];
-        const hex = Number(values[1]).toString(16).padStart(4, 0);
-        return "00" + hex + "000000000000000000000000000000000000000" + name + "";
-        // 47 chars long + name = ~50ish chars + delimiter
-        // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
-      });
+    // Converts input list from a string to a list of objects
+      // items = [
+      //   {
+      //     name: "identifier",
+      //     id: "1235",
+      //     hex: "a012",
+      //     price: "1k",
+      //   }
+      // ]
+      // ignored = ['1235', ...]
+    const parseInput = inputList => {
+      const items = []
 
-      // Add a static 3 items to each line
+      // Remove garbage lines: header, empty slots, empty lines
+      const inventory = inputList.split("\n").filter(value => !value.includes("Location	") && !value.includes("\tEmpty") && value.trim() !== "");
+      
+      // Remove unnecessary values, keeping just Name and ID
+      inventory.forEach(row => {
+        columns = row.split('\t');
+        const name = columns[1]
+        const id = columns[2]
+        const hex = Number(id).toString(16).padStart(4, 0)
+        const price = localStorage.getItem(id)
+        items.push({
+          id,
+          hex,
+          name,
+          price,
+        });
+      })
+
+      // Dedupe
+      return unique(items);
+    }
+
+    const generateOutput = items => {
+      // Add special characters around its hex value and name, with some strange padding.
+      // 47 chars long + name = ~50ish chars + delimiter
+      // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
+      // TODO: Figure out the reason for this padding...
+      links = items.map(({name, hex}) => "00" + hex + "000000000000000000000000000000000000000" + name + "")
+
+      // Generate amount of items that will fit on each line
       let finalLines = createFinalLines(links)
 
       // Failure path:
@@ -151,21 +163,32 @@
       // Add button lines
       // Page2Button10Line5=
       // Bug: Does not go to next page, just increments upwards in buttons, even though button 12 is the highest in the game.
-      var buttonLineNumber = 1;
-      var buttonNumber = buttonNumberStart.value;
+      let buttonLineNumber = 1;
+      let buttonNumber = buttonNumberStart.value;
       finalLines = finalLines.map(value => {
-        if (value.length > 255) {
-          console.warn("Warning: length of the following line is above 255 chars (" + value.length + "):")
-          console.warn(value)
-        }
         if (buttonLineNumber == 6) {
           buttonLineNumber = 1;
           buttonNumber++;
         }
         return `Page2Button${buttonNumber}Line${buttonLineNumber++}=${value}`
       })
+      return finalLines
+    }
 
-      // Separate with newlines
+    const removeIgnores = items => {
+      const ignoreList = JSON.parse(localStorage.getItem("ignoreList")) || []
+      return items.filter(value => !ignoreList.includes(value.id));
+    }
+
+    const updateList = () => {
+      const inputListText = inputList.value
+      let items = parseInput(inputListText) // creates [{name:x, id:1, hex:x, price:1}]
+      createIgnoresAndPricesLists(items)
+      items = removeIgnores(items)
+      
+      const finalLines = generateOutput(items)
+
+      // Separate with newlines and place in DOM
       outputList.value = finalLines.join("\n");
     }
 
