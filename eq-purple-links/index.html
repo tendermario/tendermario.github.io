@@ -59,7 +59,7 @@
 
     function getNamesAndIds(input) {
       // Remove garbage lines: header, empty slots, empty lines
-      var inventory = input.split("\n").filter(value => !value.startsWith("Location	") && !value.includes("\tEmpty") && value.trim() !== "");
+      var inventory = input.split("\n").filter(value => !value.includes("Location	") && !value.includes("\tEmpty") && value.trim() !== "");
       
       // Remove unnecessary values, keeping just Name and ID
       inventory = inventory.map(row => {
@@ -103,23 +103,42 @@
       });
     }
 
+    const createFinalLines = links => {
+      const finalLines = []
+      let line = prefix.value + links[0];
+      links.forEach((linkedItem, i) => {
+        if (i == 0) {
+          return
+        } 
+        const lineAddition = delimiter.value + linkedItem
+        if (line.length + lineAddition.length > 255) {
+          finalLines.push(line);
+          line = prefix.value + linkedItem;
+        } else {
+          line += lineAddition;
+        }
+      })
+      // Add the final line to the list, since we are always working on a incomplete line, and adding a line
+      // to the list only when we are working on a linked item that is going onto a new line.
+      finalLines.push(line);
+      return finalLines;
+    }
+
     const updateList = () => {
-      var namesAndIdsList = getNamesAndIds(inputList.value);
+      const namesAndIdsList = getNamesAndIds(inputList.value);
       updateIgnoresAndPricesLists(namesAndIdsList);
       
       // Add special characters around it and turn id into a hex
       links = namesAndIdsList.map(values => {
-        var name = values[0];
-        var hex = Number(values[1]).toString(16).padStart(4, 0);
+        const name = values[0];
+        const hex = Number(values[1]).toString(16).padStart(4, 0);
         return "00" + hex + "000000000000000000000000000000000000000" + name + "";
+        // 47 chars long + name = ~50ish chars + delimiter
         // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
       });
 
       // Add a static 3 items to each line
-      var finalLines = []
-      for (var i = 0; i < links.length; i+=3) {
-        finalLines.push(prefix.value + links[0 + i] + delimiter.value + links[1 + i] + delimiter.value + links[2 + i]);
-      }
+      let finalLines = createFinalLines(links)
 
       // Failure path:
       finalLines.forEach(value => {
@@ -131,18 +150,19 @@
 
       // Add button lines
       // Page2Button10Line5=
-      var line = 1;
+      // Bug: Does not go to next page, just increments upwards in buttons, even though button 12 is the highest in the game.
+      var buttonLineNumber = 1;
       var buttonNumber = buttonNumberStart.value;
       finalLines = finalLines.map(value => {
         if (value.length > 255) {
           console.warn("Warning: length of the following line is above 255 chars (" + value.length + "):")
           console.warn(value)
         }
-        if (line == 6) {
-          line = 1;
+        if (buttonLineNumber == 6) {
+          buttonLineNumber = 1;
           buttonNumber++;
         }
-        return `Page2Button${buttonNumber}Line${line++}=${value}`
+        return `Page2Button${buttonNumber}Line${buttonLineNumber++}=${value}`
       })
 
       // Separate with newlines
