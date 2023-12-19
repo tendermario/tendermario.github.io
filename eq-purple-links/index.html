@@ -86,13 +86,14 @@
       });
     }
 
-    const createFinalLines = links => {
+    const createFinalLines = items => {
       const finalLines = []
-      let line = prefix.value + links[0];
-      links.forEach((linkedItem, i) => {
+      let line;
+      items.forEach(({link, price}, i) => {
+        const linkedItem = price ? `${link} ${price}` : link
         if (i == 0) {
-          return
-        } 
+          return line = prefix.value + linkedItem;
+        }
         const lineAddition = delimiter.value + linkedItem
         if (line.length + lineAddition.length > 255) {
           finalLines.push(line);
@@ -130,11 +131,16 @@
         const id = columns[2]
         const hex = Number(id).toString(16).padStart(4, 0)
         const price = localStorage.getItem(id)
+        // Add special characters around its hex value and name, with some strange padding.
+        // 47 chars long + name = ~50ish chars + delimiter
+        // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
+        // TODO: Figure out the reason for this padding...
+        const link = "00" + hex + "000000000000000000000000000000000000000" + name + ""
         items.push({
           id,
-          hex,
           name,
           price,
+          link,
         });
       })
 
@@ -143,14 +149,8 @@
     }
 
     const generateOutput = items => {
-      // Add special characters around its hex value and name, with some strange padding.
-      // 47 chars long + name = ~50ish chars + delimiter
-      // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
-      // TODO: Figure out the reason for this padding...
-      links = items.map(({name, hex}) => "00" + hex + "000000000000000000000000000000000000000" + name + "")
-
       // Generate amount of items that will fit on each line
-      let finalLines = createFinalLines(links)
+      let finalLines = createFinalLines(items)
 
       // Failure path:
       finalLines.forEach(value => {
