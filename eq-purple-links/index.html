@@ -171,12 +171,17 @@
       // Bug: Does not go to next page, just increments upwards in buttons, even though button 12 is the highest in the game.
       let buttonLineNumber = 1;
       let buttonNumber = buttonNumberStart.value;
+      let pageNumber = 2;
       finalLines = finalLines.map(value => {
-        if (buttonLineNumber == 6) {
+        if (buttonLineNumber > 5) {
           buttonLineNumber = 1;
           buttonNumber++;
         }
-        return `Page2Button${buttonNumber}Line${buttonLineNumber++}=${value}`
+        if (buttonNumber > 12) {
+          buttonNumber = 1;
+          pageNumber++;
+        }
+        return `Page${pageNumber}Button${buttonNumber}Line${buttonLineNumber++}=${value}`
       })
       return finalLines
     }
