@@ -66,13 +66,17 @@
       ignores.empty();
       items.forEach(({name, id}) => {
         const isChecked = localStorage.getItem("ignoreList")?.includes(id) ? "checked" : "";
+        const isDisabled = localStorage.getItem("ignoreList")?.includes(id) ? "disabled" : "";
         const ignoreCheckbox = $(`<input type="checkbox" id="${name}" ${isChecked} ">`)
         const label = $(`<label for="${name}">${name}</label>`)
-        const price = $(`<input id="price-${id}" value="${localStorage.getItem(id) || ""}"></input>`)
+        const price = $(`<input id="price-${id}" value="${localStorage.getItem(id) || ""}" ${isDisabled} ></input>`)
         const item = $(`<li></li>`);
         item.append(ignoreCheckbox, label, price);
         ignores.append(item);
-        price.on('input', event => localStorage.setItem(id, event.target.value));
+        price.on('input', event => {
+          localStorage.setItem(id, event.target.value)
+          updateList()
+        });
         ignoreCheckbox.on('click', event => {
           let ignoreList = JSON.parse(localStorage.getItem("ignoreList")) || [];
           if (ignoreList.includes(id)) {
@@ -81,6 +85,7 @@
             ignoreList.push(id);
           }
           localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
+          updateList()
         });
       });
     }
