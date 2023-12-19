@@ -47,7 +47,7 @@
     // 8. Add a list of ignored items - x
     // 9. Save data to local storage to remember previous price values - x
     // 10. Fix bug: undefined items in list - x
-    // 6. Add a list of prices per items - in progress
+    // 6. Add a list of prices per items - x
     // 11. Sort items (by name, or price)
 
     function unique(a) {
@@ -75,7 +75,6 @@
         price.on('input', event => localStorage.setItem(id, event.target.value));
         ignoreCheckbox.on('click', event => {
           let ignoreList = JSON.parse(localStorage.getItem("ignoreList")) || [];
-          console.log(ignoreList);
           if (ignoreList.includes(id)) {
             ignoreList = ignoreList.filter(i => i != id);
           } else {
