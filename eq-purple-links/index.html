@@ -48,7 +48,7 @@
     // 9. Save data to local storage to remember previous price values - x
     // 10. Fix bug: undefined items in list - x
     // 6. Add a list of prices per items - x
-    // 11. Sort items (by name, or price)
+    // 11. Sort items (by name, or price) - x
 
     function unique(a) {
         var seen = {};
@@ -195,7 +195,7 @@
       const inputListText = inputList.value
       let items = parseInput(inputListText) // creates [{name:x, id:1, hex:x, price:1}]
       createIgnoresAndPricesLists(items)
-      items = removeIgnores(items)
+      items = removeIgnores(items).sort((item, prev) => Number(item.price) > Number(prev.price) ? -1 : 1)
       
       const finalLines = generateOutput(items)
 
