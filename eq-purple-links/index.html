@@ -8,6 +8,7 @@
 </head>
 <body>
   <div>
+    <h1>EverQuest purple links creator</h1>
     <label for="input-files">Input list:</label>
     <input type="file" id="input-files" name="input-files" accept=".txt" multiple class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
     <label for="input-list">Input list:</label>
@@ -78,6 +79,18 @@
           }
           localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
     }
+
+    // Input: Tomnook-inventory.txt
+    // Slot Name  ID  Quantity
+    // Bag1 Gloves  0234  1
+    // Bag1-slot2 A cool sword  11113 1
+    // ...
+
+    // Output: will be pasted in my macros.txt
+    // Page2Button5Line1=/auc WTS 002fe3000000000000000000000000000000000000000Gloves | 002fe3000000000000000000000000000000000000000A cool sword
+    // Page2Button5Line2=/auc WTS 002fe3000000000000000000000000000000000000000Gloves | 002fe3000000000000000000000000000000000000000A cool sword
+    // Page2Button5Line3=/auc WTS 002fe3000000000000000000000000000000000000000Gloves | 002fe3000000000000000000000000000000000000000A cool sword
+    // ...
 
     // Goals:
     // 1. For a given input list, create an output list - x
