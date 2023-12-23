@@ -7,6 +7,8 @@
 </head>
 <body>
   <div>
+    <label for="input-files">Input list:</label>
+    <input type="file" id="input-files" name="input-files" accept=".txt" multiple />
     <label for="input-list">Input list:</label>
     <textarea id="input-list" name="input-list"></textarea>
     <label for="output-list">Output list:</label>
@@ -28,14 +30,14 @@
   </div>
   <script src="jquery-3.7.1.min.js"></script>
   <script>
-    var delimiter = document.getElementById('delimiter');
-    var inputList = document.getElementById('input-list');
-    var outputList = document.getElementById('output-list');
-    var prefix = document.getElementById('prefix');
-    var buttonNumberStart = document.getElementById('buttonNumberStart');
-    var ignores = $('#ignores');
-    var prices = $('#prices');
-
+    const delimiter = document.getElementById('delimiter');
+    const inputList = document.getElementById('input-list');
+    const outputList = document.getElementById('output-list');
+    const prefix = document.getElementById('prefix');
+    const buttonNumberStart = document.getElementById('buttonNumberStart');
+    const ignores = $('#ignores');
+    const prices = $('#prices');
+    const selectedFiles = document.getElementById("input-files");
 
     // Goals:
     // 1. For a given input list, create an output list - x
@@ -49,6 +51,7 @@
     // 10. Fix bug: undefined items in list - x
     // 6. Add a list of prices per items - x
     // 11. Sort items (by name, or price) - x
+    // 12. Add loading from multiple files into input - x
 
     function unique(a) {
         var seen = {};
@@ -203,9 +206,29 @@
       outputList.value = finalLines.join("\n");
     }
 
+    const handleFiles = () => {
+      const fileList = selectedFiles.files
+      if (fileList.length > 0) {
+        for (file of fileList) {
+          const reader = new FileReader();
+          reader.readAsText(file, "UTF-8");
+          reader.onload = function (event) {
+              inputList.innerHTML += event.target.result;
+              updateList()
+          }
+          reader.onerror = function (e) {
+              console.error(e)
+          }
+        }
+      }
+    }
+
     inputList.addEventListener('input', updateList);
     prefix.addEventListener('input', updateList);
     delimiter.addEventListener('input', updateList);
+    selectedFiles.addEventListener('change', handleFiles);
+    // Run if the page loads as well
+    handleFiles();
   </script>
 </body>
 </html>
