@@ -11,6 +11,8 @@
     <input type="file" id="input-files" name="input-files" accept=".txt" multiple />
     <label for="input-list">Input list:</label>
     <textarea id="input-list" name="input-list"></textarea>
+    <label for="prices-list">Prices list:</label>
+    <textarea id="prices-list" name="prices-list"></textarea>
     <label for="output-list">Output list:</label>
     <textarea id="output-list"></textarea>
     <label for="prefix">Prefix:</label>
@@ -32,12 +34,35 @@
   <script>
     const delimiter = document.getElementById('delimiter');
     const inputList = document.getElementById('input-list');
+    const pricesList = document.getElementById('prices-list');
     const outputList = document.getElementById('output-list');
     const prefix = document.getElementById('prefix');
     const buttonNumberStart = document.getElementById('buttonNumberStart');
     const ignores = $('#ignores');
     const prices = $('#prices');
     const selectedFiles = document.getElementById("input-files");
+    
+    const getItemPrice = id => {
+      return localStorage.getItem(id)
+    }
+    
+    const setItemPrice = (id, price) => {
+      localStorage.setItem(id, price)
+    }
+    
+    const getIgnores = () => {
+      return JSON.parse(localStorage.getItem("ignoreList") || [])
+    }
+
+    const toggleIgnoreId = id => {
+      let ignoreList = getIgnores();
+          if (ignoreList.includes(id)) {
+            ignoreList = ignoreList.filter(i => i != id);
+          } else {
+            ignoreList.push(id);
+          }
+          localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
+    }
 
     // Goals:
     // 1. For a given input list, create an output list - x
@@ -52,7 +77,7 @@
     // 6. Add a list of prices per items - x
     // 11. Sort items (by name, or price) - x
     // 12. Add loading from multiple files into input - x
-
+    // 13. Add prices via another input
     function unique(a) {
         var seen = {};
         return a.filter(function(item) {
@@ -68,28 +93,22 @@
       // Add to both ignores and prices lists
       ignores.empty();
       items.forEach(({name, id}) => {
-        const isChecked = localStorage.getItem("ignoreList")?.includes(id) ? "checked" : "";
-        const isDisabled = localStorage.getItem("ignoreList")?.includes(id) ? "disabled" : "";
+        const isChecked = getIgnores()?.includes(id) ? "checked" : "";
+        const isDisabled = getIgnores()?.includes(id) ? "disabled" : "";
         const ignoreCheckbox = $(`<input type="checkbox" id="${name}" ${isChecked} ">`)
         const label = $(`<label for="${name}">${name}</label>`)
-        const price = $(`<input id="price-${id}" value="${localStorage.getItem(id) || ""}" ${isDisabled} ></input>`)
+        const price = $(`<input id="price-${id}" value="${getItemPrice(id) || ""}" ${isDisabled} ></input>`)
         const item = $(`<li></li>`);
         item.append(ignoreCheckbox, label, price);
         ignores.append(item);
         
         price.on('input', event => {
-          localStorage.setItem(id, event.target.value)
+          setItemPrice(id, event.target.value)
         });
         price.on('blur', updateList)
 
         ignoreCheckbox.on('click', event => {
-          let ignoreList = JSON.parse(localStorage.getItem("ignoreList")) || [];
-          if (ignoreList.includes(id)) {
-            ignoreList = ignoreList.filter(i => i != id);
-          } else {
-            ignoreList.push(id);
-          }
-          localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
+          toggleIgnoreId(id)
           updateList()
         });
       });
@@ -139,7 +158,7 @@
         const name = columns[1]
         const id = columns[2]
         const hex = Number(id).toString(16).padStart(4, 0)
-        const price = localStorage.getItem(id)
+        const price = getItemPrice(id)
         // Add special characters around its hex value and name, with some strange padding.
         // 47 chars long + name = ~50ish chars + delimiter
         // E.g.: 002fe3000000000000000000000000000000000000000Leatherfoot Raider Skullcap
@@ -197,6 +216,7 @@
     const updateList = () => {
       const inputListText = inputList.value
       let items = parseInput(inputListText) // creates [{name:x, id:1, hex:x, price:1}]
+      updateLocalStore(items)
       createIgnoresAndPricesLists(items)
       items = removeIgnores(items).sort((item, prev) => Number(item.price) > Number(prev.price) ? -1 : 1)
       
@@ -204,6 +224,14 @@
 
       // Separate with newlines and place in DOM
       outputList.value = finalLines.join("\n");
+    }
+
+    const updateLocalStore = list => {
+      localStorage.setItem('itemList', JSON.stringify(Array.from(list)))
+    }
+
+    const getLocalStore = () => {
+      return new Map(JSON.parse(localStorage.getItem('itemList')))
     }
 
     const handleFiles = () => {
@@ -223,10 +251,32 @@
       }
     }
 
+    // Parse the prices into 
+    // [{name: x, price: y}, ...]
+    // First column name, Last column price
+    const parsePrices = () => {}
+
+    const updatePrices = () => {
+      const inputListText = inputList.value
+      let items = parsePrices(inputListText)
+      const map = new Map(JSON.parse(localStorage.itemIdToName))
+      items.forEach(item => {
+        const {name, price} = item
+        if (map.values.includes(item)) {
+          // TODO: Add ability to check whether theres two items of the same name conflicting
+          const id = map[name]
+          localStorage.setItem(id, price)
+        } else {
+          console.log("ID for item not saved in localstorage yet", name)
+        }
+      })
+    }
+
     inputList.addEventListener('input', updateList);
     prefix.addEventListener('input', updateList);
     delimiter.addEventListener('input', updateList);
     selectedFiles.addEventListener('change', handleFiles);
+    pricesList.addEventListener('input', updatePrices)
     // Run if the page loads as well
     handleFiles();
   </script>
