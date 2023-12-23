@@ -42,11 +42,25 @@
     const prices = $('#prices');
     const selectedFiles = document.getElementById("input-files");
     
+    // Storage actions
+
+    const updateLocalStore = list => {
+      localStorage.setItem('itemList', JSON.stringify(Array.from(list)))
+    }
+
+    const getItemList = () => {
+      return JSON.parse(localStorage.getItem('itemList'))
+    }
+
     const getItemPrice = id => {
       return localStorage.getItem(id)
     }
+
+    const getItemById = id => getItemList().filter(item => item.id == id)[0]
     
     const setItemPrice = (id, price) => {
+      const state = getItemList()
+      const newList = 
       localStorage.setItem(id, price)
     }
     
@@ -224,14 +238,6 @@
 
       // Separate with newlines and place in DOM
       outputList.value = finalLines.join("\n");
-    }
-
-    const updateLocalStore = list => {
-      localStorage.setItem('itemList', JSON.stringify(Array.from(list)))
-    }
-
-    const getLocalStore = () => {
-      return new Map(JSON.parse(localStorage.getItem('itemList')))
     }
 
     const handleFiles = () => {
