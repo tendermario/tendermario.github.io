@@ -4,23 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EverQuest Purple Links Creator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
   <div>
     <label for="input-files">Input list:</label>
-    <input type="file" id="input-files" name="input-files" accept=".txt" multiple />
+    <input type="file" id="input-files" name="input-files" accept=".txt" multiple class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
     <label for="input-list">Input list:</label>
-    <textarea id="input-list" name="input-list"></textarea>
-    <label for="prices-list">Prices list:</label>
-    <textarea id="prices-list" name="prices-list"></textarea>
-    <label for="output-list">Output list:</label>
-    <textarea id="output-list"></textarea>
+    <textarea id="input-list" name="input-list" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+    <label for="prices-list">Input prices list:</label>
+    <textarea id="prices-list" name="prices-list" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
     <label for="prefix">Prefix:</label>
-    <input id="prefix" value="/auc WTS "></input>
+    <input id="prefix" value="/auc WTS " class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
     <label for="delimiter">Delimiter:</label>
-    <input id="delimiter" value=" | "></input>
+    <input id="delimiter" value=" | " class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
     <label for="buttonNumberStart">Button number start (Starts on page 2, button 1-12):</label>
-    <input id="buttonNumberStart" value="5"></input>
+    <input id="buttonNumberStart" value="5" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></input>
+    <label for="output-list">Output list:</label>
+    <textarea id="output-list" class="w-full py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
   </div>
   <div>
     <div>
@@ -111,7 +112,7 @@
         const isDisabled = getIgnores()?.includes(id) ? "disabled" : "";
         const ignoreCheckbox = $(`<input type="checkbox" id="${name}" ${isChecked} ">`)
         const label = $(`<label for="${name}">${name}</label>`)
-        const price = $(`<input id="price-${id}" value="${getItemPrice(id) || ""}" ${isDisabled} ></input>`)
+        const price = $(`<input id="price-${id}" value="${getItemPrice(id) || ""}" ${isDisabled} class="rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-red-600 placeholder:font-black focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="0" ></input>`)
         const item = $(`<li></li>`);
         item.append(ignoreCheckbox, label, price);
         ignores.append(item);
